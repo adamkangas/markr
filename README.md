@@ -6,6 +6,7 @@ This repository is now a Turborepo workspace with:
 
 - `apps/api`: Hono backend service published on port `4567`.
 - `apps/web`: TanStack Start frontend published on port `3000`.
+- `e2e/`: Playwright-powered E2E tests bridging the `api` and `web` services.
 - `packages/contracts`: shared Zod-backed API contracts imported by both apps.
 - `packages/ui`: Shadcn UI package
 
@@ -66,7 +67,7 @@ Run every test target with:
 turbo run test
 ```
 
- urbo runs each workspace package's `test`
+Turbo runs each workspace package's `test`
 script, so the API and web Vitest suites execute alongside the Playwright E2E
 suite in `@markr/e2e`. 
 
@@ -134,7 +135,7 @@ Aggregate and histogram endpoints fetch the percentages for a single `test_id` a
 
 I'll readily admit that this is the most I've been asked to care about accessibility in awhile – in larger teams this has not typically been my domain. Even after firing up VoiceOver and spending time going back-and-forth with agents, I feel I still have a lot to learn here. 
 
-The solutions I'm delivering within the requested timeframe may not be optimal, so I'm keen to identify where my naive approach may be lacking so I can improve.
+The solutions I'm delivering within the requested timeframe may not be optimal, so I'm keen to identify where my naive approach may be lacking so I can improve. Through a steady diet of articles and videos teaching best practices, and some lint rules, I'm confident I can pick this up.
 
 ## Logical next steps
 
@@ -162,8 +163,7 @@ The solutions I'm delivering within the requested timeframe may not be optimal, 
 - API class naming follows the Cullen-family convention from
   `docs/requirements/sample_results.xml`. The fixture describes Vicumbrian
   government submissions as traditionally using names from the Cullen coven for
-  code that talks to scanner exports, so the backend keeps that audit-trail
-  joke visible in its service names: `CarlisleResultsXmlParser` performs
+  code that talks to scanner exports, so the backend keeps that trend visible in its service names: `CarlisleResultsXmlParser` performs
   careful intake and validation, `EsmeResultsRepository` keeps imported results
   safely housed, `AliceScoreAnalytics` handles the forward-looking aggregate
   view of a cohort, and `JasperDistributionBuilder` shapes the score
