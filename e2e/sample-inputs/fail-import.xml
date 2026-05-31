@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  Deliberately invalid Markr import fixture for apps/api.
+  Expected API result with Content-Type: text/xml+markr is HTTP 400:
+  { "error": "Invalid XML format" }
+-->
+<mcq-test-results>
+  <mcq-test-result scanned-on="2017-12-04T12:12:10+11:00">
+    <first-name>Ada</first-name>
+    <last-name>Lovelace</last-name>
+    <student-number>000123</student-number>
+    <test-id>fail-import-fixture</test-id>
+    <summary-marks available="20" obtained="18" />
+  </mcq-test-result>
+  <mcq-test-result scanned-on="2017-12-04T12:13:10+11:00">
+    <first-name>Grace</first-name>
+    <student-number>000124</student-number>
+    <test-id>fail-import-fixture</test-id>
+    <summary-marks available="20" obtained="21" />
+  </mcq-test-result>
+</mcq-test-results>
