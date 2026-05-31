@@ -1,0 +1,23 @@
+@import "@markr/ui/styles.css";
+
+@source "../../../packages/ui/src/**/*.{ts,tsx}";
+
+:root {
+  --background: oklch(0.985 0.003 95);
+}
+
+code {
+  border-radius: var(--radius-sm);
+  background: color-mix(in oklab, var(--muted) 80%, transparent);
+  padding: 0.125rem 0.25rem;
+  font-size: 0.9em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0ms !important;
+    animation-duration: 0ms !important;
+  }
+}
