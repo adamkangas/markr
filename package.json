@@ -10,6 +10,7 @@
     "e2e": "pnpm --filter @markr/e2e test",
     "e2e:install": "pnpm --filter @markr/e2e exec playwright install chromium",
     "e2e:ui": "pnpm --filter @markr/e2e test:ui",
+    "docker:clear-api-data": "scripts/clear-api-data-volume.sh",
     "test": "turbo run test",
     "typecheck": "turbo typecheck",
     "lint": "turbo lint",
