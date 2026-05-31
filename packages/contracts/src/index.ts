@@ -57,3 +57,22 @@ export const apiErrorSchema = z.object({
 });
 
 export type ApiError = z.infer<typeof apiErrorSchema>;
+
+export const testResultsUpdatedEventName = "results-updated";
+
+export const testResultsUpdatedEventPayloadSchema = z.object({
+  testId: z.string().min(1),
+});
+
+export type TestResultsUpdatedEventPayload = z.infer<
+  typeof testResultsUpdatedEventPayloadSchema
+>;
+
+export const testResultsUpdatedEventSchema = z.object({
+  event: z.literal(testResultsUpdatedEventName),
+  data: testResultsUpdatedEventPayloadSchema,
+});
+
+export type TestResultsUpdatedEvent = z.infer<
+  typeof testResultsUpdatedEventSchema
+>;

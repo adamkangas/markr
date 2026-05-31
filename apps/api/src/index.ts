@@ -7,6 +7,8 @@ import {
   histogramResponseSchema,
   importResponseSchema,
   serviceInfoSchema,
+  testResultsUpdatedEventName,
+  testResultsUpdatedEventSchema,
   testsResponseSchema,
 } from '@markr/contracts';
 
@@ -51,8 +53,12 @@ function publishResultUpdates(testIds: string[]) {
       continue;
     }
 
+    const event = testResultsUpdatedEventSchema.parse({
+      event: testResultsUpdatedEventName,
+      data: { testId },
+    });
     const message = eventEncoder.encode(
-      `event: results-updated\ndata: ${JSON.stringify({ testId })}\n\n`,
+      `event: ${event.event}\ndata: ${JSON.stringify(event.data)}\n\n`,
     );
 
     for (const subscriber of subscribers) {

@@ -350,9 +350,13 @@ describe("test detail page", () => {
 
       close = vi.fn();
 
-      dispatch(type: string) {
+      dispatch(type: string, data: unknown = { testId: "1234" }) {
         for (const listener of this.listeners.get(type) ?? []) {
-          listener(new Event(type));
+          listener(
+            new MessageEvent(type, {
+              data: typeof data === "string" ? data : JSON.stringify(data),
+            }),
+          );
         }
       }
     }
@@ -371,6 +375,12 @@ describe("test detail page", () => {
     );
     expect(fetchMock).toHaveBeenCalledTimes(2);
 
+    MockEventSource.instances[0].dispatch("results-updated", {
+      testId: "different-test",
+    });
+    MockEventSource.instances[0].dispatch("results-updated", {
+      unexpected: "shape",
+    });
     MockEventSource.instances[0].dispatch("results-updated");
     MockEventSource.instances[0].dispatch("results-updated");
     MockEventSource.instances[0].dispatch("results-updated");

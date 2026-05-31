@@ -1,4 +1,9 @@
-import type { AggregateResponse, HistogramResponse } from '@markr/contracts';
+import {
+  type AggregateResponse,
+  type HistogramResponse,
+  testResultsUpdatedEventName,
+  testResultsUpdatedEventSchema,
+} from '@markr/contracts';
 import {
   queryOptions,
   useQueryClient,
@@ -48,7 +53,11 @@ function TestDetailRoute() {
     let refreshTimer: number | undefined;
     let isSubscribed = true;
 
-    const scheduleRefresh = () => {
+    const scheduleRefresh = (event: Event) => {
+      if (!isTestResultsUpdatedEvent(event, testId)) {
+        return;
+      }
+
       if (refreshTimer !== undefined) {
         window.clearTimeout(refreshTimer);
       }
@@ -64,7 +73,7 @@ function TestDetailRoute() {
       }, 500);
     };
 
-    events.addEventListener('results-updated', scheduleRefresh);
+    events.addEventListener(testResultsUpdatedEventName, scheduleRefresh);
 
     return () => {
       isSubscribed = false;
@@ -73,7 +82,7 @@ function TestDetailRoute() {
         window.clearTimeout(refreshTimer);
       }
 
-      events.removeEventListener('results-updated', scheduleRefresh);
+      events.removeEventListener(testResultsUpdatedEventName, scheduleRefresh);
       events.close();
     };
   }, [queryClient, testId]);
@@ -244,4 +253,21 @@ function TestDetailError({ error }: { error: Error }) {
 
 function formatPercent(value: number): string {
   return `${Number.isInteger(value) ? value : Number(value.toFixed(4))}%`;
+}
+
+function isTestResultsUpdatedEvent(event: Event, testId: string): boolean {
+  if (!(event instanceof MessageEvent) || typeof event.data !== 'string') {
+    return false;
+  }
+
+  try {
+    const payload = testResultsUpdatedEventSchema.parse({
+      event: event.type,
+      data: JSON.parse(event.data),
+    }).data;
+
+    return payload.testId === testId;
+  } catch {
+    return false;
+  }
 }

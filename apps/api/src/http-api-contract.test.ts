@@ -1,4 +1,8 @@
 import { randomUUID } from "node:crypto";
+import {
+  testResultsUpdatedEventName,
+  testResultsUpdatedEventSchema,
+} from "@markr/contracts";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { runMigrations } from "./db/migrate";
@@ -158,10 +162,16 @@ describe("HTTP API contract", () => {
       }),
     });
 
-    const event = await nextEvent;
-    expect(decoder.decode(event?.value)).toContain(
-      `event: results-updated\ndata: {"testId":"${testId}"}`,
-    );
+    const event = decoder.decode((await nextEvent)?.value);
+    expect(
+      testResultsUpdatedEventSchema.parse({
+        event: event.match(/^event: (.*)$/m)?.[1],
+        data: JSON.parse(event.match(/^data: (.*)$/m)?.[1] ?? ""),
+      }),
+    ).toEqual({
+      event: testResultsUpdatedEventName,
+      data: { testId },
+    });
 
     await reader?.cancel();
   });
