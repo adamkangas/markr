@@ -1,0 +1,13 @@
+{
+  "name": "@markr/e2e",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "playwright test --config playwright.config.ts",
+    "test:ui": "playwright test --config playwright.config.ts --ui"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.60.0"
+  }
+}
