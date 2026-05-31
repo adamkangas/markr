@@ -20,6 +20,33 @@ Run the Docker environment with:
 docker compose up --build
 ```
 
+To clear the Docker API database volume and start fresh:
+
+```bash
+pnpm docker:clear-api-data
+```
+
+For non-interactive runs, use:
+
+```bash
+pnpm docker:clear-api-data -- --force
+```
+
+Docker builds the web app with two API base URLs because the frontend fetches
+data from two different network locations:
+
+- `VITE_API_SERVER_BASE_URL=http://api:4567` is used by TanStack Start route
+  loaders while they run inside the `web` container. Docker Compose exposes the
+  backend to other containers through the `api` service name, not through
+  `localhost`.
+- `VITE_API_BROWSER_BASE_URL=http://localhost:4567` is used by browser-side
+  requests after hydration. From your browser, the backend is reachable through
+  the host port published by Compose.
+
+The older `VITE_API_BASE_URL` value is still supported as a single fallback for
+non-Docker setups where the server and browser can both reach the API at the
+same address.
+
 ### Locally
 
 ```bash

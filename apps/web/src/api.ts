@@ -6,8 +6,19 @@ import {
   testsResponseSchema,
 } from "@markr/contracts";
 
-export const apiBaseUrl =
-  import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4567";
+const browserApiBaseUrl =
+  import.meta.env.VITE_API_BROWSER_BASE_URL ??
+  import.meta.env.VITE_API_BASE_URL ??
+  "http://localhost:4567";
+
+const serverApiBaseUrl =
+  import.meta.env.VITE_API_SERVER_BASE_URL ??
+  import.meta.env.VITE_API_BASE_URL ??
+  browserApiBaseUrl;
+
+export const apiBaseUrl = import.meta.env.SSR
+  ? serverApiBaseUrl
+  : browserApiBaseUrl;
 
 export async function apiJson(response: Response): Promise<unknown> {
   const body = (await response.json()) as unknown;

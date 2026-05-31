@@ -14,6 +14,12 @@ RUN turbo prune @markr/web --docker
 
 FROM base AS installer
 
+ARG VITE_API_BROWSER_BASE_URL=http://localhost:4567
+ARG VITE_API_SERVER_BASE_URL=http://api:4567
+
+ENV VITE_API_BROWSER_BASE_URL=${VITE_API_BROWSER_BASE_URL}
+ENV VITE_API_SERVER_BASE_URL=${VITE_API_SERVER_BASE_URL}
+
 COPY --from=pruner /app/out/json/ .
 
 RUN pnpm install --frozen-lockfile
@@ -26,7 +32,8 @@ RUN pnpm turbo build --filter=@markr/web
 FROM base AS runner
 
 ENV NODE_ENV=production
-ENV VITE_API_BASE_URL=http://localhost:4567
+ENV VITE_API_BROWSER_BASE_URL=http://localhost:4567
+ENV VITE_API_SERVER_BASE_URL=http://api:4567
 
 RUN groupadd --system --gid 1001 nodejs \
   && useradd --system --create-home --home-dir /home/markr --uid 1001 --gid nodejs markr
