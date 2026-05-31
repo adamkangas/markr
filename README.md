@@ -5,7 +5,7 @@
 This repository is now a Turborepo workspace with:
 
 - `apps/api`: Hono backend service published on port `4567`.
-- `apps/web`: Vite React frontend published on port `3000`.
+- `apps/web`: TanStack Start frontend published on port `3000`.
 - `packages/contracts`: shared Zod-backed API contracts imported by both apps.
 - `packages/ui`: Shadcn UI package
 
@@ -39,8 +39,9 @@ pnpm e2e
 The Playwright suite lives under `e2e/`, starts both services on test-only
 ports (`4568` for the API and `3001` for the web app), and uses an isolated
 SQLite database under `e2e/.playwright/`, so it can run without disturbing the
-normal local development ports used by `pnpm dev` and `docker compose`. The
-suite builds the API and web app first, then Playwright launches the API with
+normal local development ports used by `pnpm dev` and `docker compose`. 
+
+The suite builds the API and web app first, then Playwright launches the API with
 `DATABASE_PATH` pointed at the temporary database and launches the web app with
 `VITE_API_BASE_URL` pointed at the test API. This keeps the browser tests close
 to the real deployed shape while still making every run disposable.
@@ -59,17 +60,21 @@ pnpm e2e:ui
 
 ### Full test suite
 
-Run every package-level test target with:
+Run every test target with:
 
 ```bash
-pnpm test
+turbo run test
 ```
 
-This delegates to `turbo run test`. Turbo runs each workspace package's `test`
+ urbo runs each workspace package's `test`
 script, so the API and web Vitest suites execute alongside the Playwright E2E
-suite in `@markr/e2e`. The E2E task is marked as uncached because it starts
+suite in `@markr/e2e`. 
+
+The E2E task is marked as uncached because it starts
 real HTTP services and uses a fresh SQLite database, while the other package
-tests remain ordinary deterministic Vitest runs. Turbo also makes the E2E task
+tests remain ordinary deterministic Vitest runs. 
+
+Turbo also makes the E2E task
 depend on the API and web builds, so type errors and bundling issues are caught
 before the browser tests start.
 
@@ -84,8 +89,9 @@ apart as easily.
 The backend is a small Hono service backed by SQLite and Drizzle ORM. Hono keeps
 the HTTP layer light enough for the assignment's narrow API surface, while
 Drizzle gives the result import path explicit schema definitions, migrations,
-and predictable upsert behaviour for duplicate scans. The frontend is a Vite
-React app using TanStack Router, TanStack Query, and TanStack Form; this was a
+and predictable upsert behaviour for duplicate scans. 
+
+The frontend is a Vite React app using TanStack Router, TanStack Query, and TanStack Form; this was a
 chance to try the TanStack Start-era toolchain while still keeping the runtime
 simple for local and Docker evaluation.
 
@@ -97,34 +103,22 @@ flows and service integration; Docker Compose provides the compliance-friendly
 
 ## Assumptions
 
-First of all, it is assumed that the "flavour/lore" oriented instructions contained in the brief and provided support files are extremely important. This includes the Taylor Swift Fan Club sponsorship, Cullen-family service naming, goblin-warding function wrappers, etc. Lots of manual consideration was given to this, as AI agents tended to ignore it, or explicitly advise against following the guidance, thinking it to be some sort of joke instead of something an evaluator might explicitly care about.
+### Flavour / Lore Instructions Are Important
 
-Imported XML files are treated as Markr MCQ scanner exports only when the root
-document shape matches the requirements. The importer intentionally ignores
-`answer` elements and any unknown extra fields, and uses the `summary-marks`
-element as the source of truth for scoring because the brief says to trust that
-summary for the first cut.
+It is assumed that the "flavour/lore" oriented instructions contained in the brief and provided support files are extremely important. This includes the Taylor Swift Fan Club sponsorship, Cullen-family service naming, goblin-warding function wrappers, etc. 
 
-Each import request is handled atomically from the user's point of view: if any
-required field is missing or malformed, the whole document is rejected and no
-partial result should be accepted. Duplicate results are identified by the pair
-of `test_id` and `student_number`, whether they appear in the same XML document
-or in later uploads.
+Manual consideration was given to this, as AI agents tended to ignore it, or explicitly advised against following the guidance, thinking it to be some sort of joke instead of an explicit signal an evaluator might care about.
 
-When duplicate scans are received, the app keeps the maximum `marks_obtained`
-and maximum `marks_available` seen for that student and test. This follows the
-requirement literally, but it does mean those two values can come from different
-rescans. The implementation assumes that is acceptable for the MVP and favours
-the most generous interpretation of scanner retries.
+### Security Can Come Later
 
-The dashboard reports percentages as `marks_obtained / marks_available * 100`
-for every stored student result. The app assumes `marks_available` is positive,
-test identifiers and student numbers are opaque strings, and the list of tests
-is small enough for direct query-and-render flows during local evaluation.
+Early on in the brief, it's mentioned: 
 
-This build is scoped as a local, single-node MVP. It is not yet hardened for
-public internet exposure, multiple API replicas, long-running exam seasons, or
-untrusted users beyond basic XML validation and content-type checks.
+```
+Everyone is calling it an MVP, but every bone in your body screams that this thing will be welded into critical production workflows the moment you press 'deploy'. So you should probably think about, like, metrics or security or something?
+```
+
+However, as security is not explicitly mentioned in the formal requirements, we'll leave it as something to be tuned later.
+
 
 ## Current implementation notes
 
@@ -133,6 +127,14 @@ The backend persists imported MCQ summary results in SQLite through Drizzle ORM.
 The data model is intentionally small: `test_results` stores one row per `(test_id, student_number)` with the student's identifying fields, scan timestamp, available marks, obtained marks, and an update timestamp. Duplicate rescans are resolved with SQLite upserts that keep the maximum `marks_obtained` and maximum `marks_available`, matching the brief even though those two maxima may come from different scans.
 
 Aggregate and histogram endpoints fetch the percentages for a single `test_id` and calculate the dashboard statistics in application code. The table has an index on `test_id`, which keeps the hot path simple and fast for MVP-sized exam cohorts. If cohorts or dashboard traffic grow substantially, the next step would be to maintain cached per-test aggregate rows during import rather than recalculating percentiles on every request.
+
+## Potential Pitfalls and Shortcomings
+
+### Accessibility
+
+I'll readily admit that this is the most I've been asked to care about accessibility in awhile – in larger teams this has not typically been my domain. Even after firing up VoiceOver and spending time going back-and-forth with agents, I feel I still have a lot to learn here. 
+
+The solutions I'm delivering within the requested timeframe may not be optimal, so I'm keen to identify where my naive approach may be lacking so I can improve.
 
 ## Logical next steps
 
