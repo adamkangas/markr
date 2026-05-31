@@ -1,0 +1,25 @@
+{
+  "name": "markr",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev --parallel",
+    "e2e": "pnpm --filter @markr/e2e test",
+    "e2e:install": "pnpm --filter @markr/e2e exec playwright install chromium",
+    "e2e:ui": "pnpm --filter @markr/e2e test:ui",
+    "test": "turbo run test",
+    "typecheck": "turbo typecheck",
+    "lint": "turbo lint",
+    "format": "prettier --write \"**/*.{ts,tsx,js,json,md,css,yml,yaml}\""
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.60.0",
+    "prettier": "^3.8.3",
+    "prettier-plugin-tailwindcss": "^0.8.0",
+    "turbo": "^2.7.0",
+    "typescript": "~6.0.3"
+  }
+}
