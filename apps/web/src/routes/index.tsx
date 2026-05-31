@@ -51,7 +51,11 @@ function UploadPage() {
       if (!value.file) {
         return;
       }
-      await importMutation.mutateAsync(value.file);
+      try {
+        await importMutation.mutateAsync(value.file);
+      } catch {
+        // React Query stores mutation errors for the alert below.
+      }
     },
   });
 
